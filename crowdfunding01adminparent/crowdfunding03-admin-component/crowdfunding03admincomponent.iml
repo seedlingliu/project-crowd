@@ -11,7 +11,7 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.4.5" level="project" />
     <orderEntry type="module" module-name="crowdfunding04adminentity" />
-    <orderEntry type="module" module-name="crowdfunding05commonutil" />
   </component>
 </module>
