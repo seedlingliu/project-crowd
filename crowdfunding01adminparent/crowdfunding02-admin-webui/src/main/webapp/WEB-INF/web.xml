@@ -2,6 +2,99 @@
  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
-<web-app>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
   <display-name>Archetype Created Web Application</display-name>
+
+  <!--加载顺序
+    1：Listener
+    2：Filter
+    3：Servlet
+  -->
+
+  <!--配置listener-->
+  <context-param>
+    <!--contextConfigLocation
+      配置 xml配置文件的路径，由Listener通过配置文件初始化IOC容器（父）
+
+      classpath:spring-persist-*.xml：
+      *：通配符
+    -->
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:spring-persist-*.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!--配置filter-->
+  <filter>
+    <!--
+        CharacterEncodingFilter需在其他的Filter之前配置
+        目的，使encoding生效
+    -->
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>utf-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceRequestEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceResponseEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!--配置servlet-->
+  <servlet>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <!--
+        DispatcherServlet 通过spring-web-mvc.xml该配置文件，初始化IPC容器（子）
+      -->
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:spring-web-mvc.xml</param-value>
+    </init-param>
+    <!--
+      <load-on-startup>1</load-on-startup>
+      Servlet默认的生命周期中，创建对象是在第一次接收到请求时，
+      但DispatcherServlet在创建对象后，会进行大量的框架方面的初始化，所以在接收到请求时进行初始化，不太方便
+      因此，此处设定为web应用启动时， DispatcherServlet的对象便会被创建
+      此处的数值越小，对象创建的越早
+    -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <!--第一种
+      <url-pattern>/</url-pattern>
+      所有路径都经过前端控制器
+    -->
+    <!--<url-pattern>/</url-pattern>-->
+    <!--第二种，配置请求扩展名
+      <url-pattern>*.html</url-pattern>
+      *.html 才会经过前端控制器
+    -->
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <!--
+      再另配置*.json的原因
+      如果一个ajax请求的扩展名是html，但服务器返回的数据是json，则会发生406错误
+    -->
+    <url-pattern>*.json</url-pattern>
+  </servlet-mapping>
+
 </web-app>
